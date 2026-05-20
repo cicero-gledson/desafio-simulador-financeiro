@@ -4,6 +4,7 @@ import dev.gledson.cicero.dto.SimulacaoRequest;
 import dev.gledson.cicero.dto.SimulacaoResponse;
 import dev.gledson.cicero.entity.MemoriaCalculoEntity;
 import dev.gledson.cicero.entity.SimulacaoEntity;
+import dev.gledson.cicero.exception.SimulacaoNaoEncontradaException;
 import dev.gledson.cicero.mapper.SimulacaoMapper;
 import dev.gledson.cicero.repository.SimulacaoRepository;
 
@@ -33,6 +34,13 @@ public class SimulacaoService {
         SimulacaoEntity simulacao = calcular(request);
 
         repository.persist(simulacao);
+
+        return SimulacaoMapper.toResponse(simulacao);
+    }
+
+    public SimulacaoResponse buscarPorId(Long id) {
+        SimulacaoEntity simulacao = repository.findByIdOptional(id)
+                .orElseThrow(() -> new SimulacaoNaoEncontradaException(id));
 
         return SimulacaoMapper.toResponse(simulacao);
     }
@@ -87,4 +95,6 @@ public class SimulacaoService {
     private BigDecimal dinheiro(BigDecimal valor) {
         return valor.setScale(ESCALA_MONETARIA, ARREDONDAMENTO);
     }
+
+
 }
